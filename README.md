@@ -30,7 +30,7 @@ In this paper, we present a comprehensive diagnostic framework specifically desi
 
     ) when representational saturation is detected.
 
-    An open-source implementation of the framework, validated on Qwen2.5-4B models fine-tuned on the Shamela corpus, with actionable recommendations for practitioners.
+    An open-source implementation of the framework, validated on Qwen3.5-4B models fine-tuned on the Shamela corpus, with actionable recommendations for practitioners.
 
 2. Related Work
 2.1 Arabic LLM Evaluation
