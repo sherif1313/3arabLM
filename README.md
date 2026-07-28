@@ -233,7 +233,7 @@ Our validation on Qwen3.5-4B models fine-tuned on the Shamela corpus demonstrate
 
 Future Work: We plan to extend the framework with: (1) SVCCA and PWCCA for more robust similarity analysis; (2) Jacobian Spectrum analysis for sensitivity measurement; (3) Cross-checkpoint drift analysis to track representational evolution during training; and (4) Integration with the Hugging Face ecosystem for community adoption.
 
-Open-Source Release: The complete diagnostic toolkit is available at: https://huggingface.co/shamela-builder/capacity-analyzer
+Open-Source Release: The complete diagnostic toolkit is available at: https://huggingface.co/
 References
 
 [1] Elhage, N., et al. (2021). "A Mathematical Framework for Transformer Circuits." Anthropic Research.
