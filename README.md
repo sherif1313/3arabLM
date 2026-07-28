@@ -140,7 +140,7 @@ High condition numbers (>1000) indicate ill-conditioned matrices, which can impe
 
 We evaluate our framework on:
 
-    Base Model: Qwen2.5-4B (4.2B parameters, 32 layers, 2560 hidden dimension, 32 attention heads)
+    Base Model: Qwen3.5-4B (4.2B parameters, 32 layers, 2560 hidden dimension, 32 attention heads)
 
     Fine-tuned Model: Full fine-tuning (16-bit) on the Shamela corpus
 
@@ -229,7 +229,7 @@ Recommendation: Continue pretraining for an additional 20,000 steps with a reduc
 
 We have presented a comprehensive mechanistic interpretability framework for diagnosing the representational health of Arabic heritage language models. Our multi-metric approach—combining CKA, SVCCA, intrinsic dimension analysis, weight spectrum analysis, and cross-domain forgetting matrices—provides a holistic view of model capacity, layer utilization, and training dynamics.
 
-Our validation on Qwen2.5-4B models fine-tuned on the Shamela corpus demonstrates the practical utility of the framework. The diagnostic results indicate that the model is approaching representational saturation, with moderate Far-Layer CKA (0.72), condition numbers (342), and cross-domain forgetting (>0.74). These findings provide actionable guidance for continued model development: continue pretraining with monitoring, and consider SOLAR-style depth growing if metrics exceed critical thresholds.
+Our validation on Qwen3.5-4B models fine-tuned on the Shamela corpus demonstrates the practical utility of the framework. The diagnostic results indicate that the model is approaching representational saturation, with moderate Far-Layer CKA (0.72), condition numbers (342), and cross-domain forgetting (>0.74). These findings provide actionable guidance for continued model development: continue pretraining with monitoring, and consider SOLAR-style depth growing if metrics exceed critical thresholds.
 
 Future Work: We plan to extend the framework with: (1) SVCCA and PWCCA for more robust similarity analysis; (2) Jacobian Spectrum analysis for sensitivity measurement; (3) Cross-checkpoint drift analysis to track representational evolution during training; and (4) Integration with the Hugging Face ecosystem for community adoption.
 
