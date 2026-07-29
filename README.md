@@ -3,13 +3,35 @@
 Authors: Sheriff (Project Lead)
 Affiliation: Shamela Builder Project
 Date: July 2026
+📋 Table of Contents
+
+    Abstract
+
+    Introduction
+
+    Related Work
+
+    Methodology
+
+    Experimental Setup
+
+    Results and Discussion
+
+    Conclusion
+
+    References
+
+    Appendices
+
 Abstract
 
 The rapid adoption of Large Language Models (LLMs) in Arabic natural language processing has outpaced the development of diagnostic tools capable of assessing their internal representational health, particularly when these models are fine-tuned on specialized historical and religious corpora. This paper presents a comprehensive mechanistic interpretability framework designed to diagnose the representational capacity, layer-wise similarity, and training dynamics of Arabic LLMs fine-tuned on the Shamela library—a large-scale historical Arabic corpus spanning over 1,400 years of Islamic scholarship.
 
 We introduce a multi-metric diagnostic toolkit that computes: (1) Centered Kernel Alignment (CKA) and Singular Vector Canonical Correlation Analysis (SVCCA) for layer-wise representational similarity; (2) Stable Rank, Effective Rank, and Participation Ratio for activation space characterization; (3) Intrinsic Dimension estimation using the Levina–Bickel Maximum Likelihood Estimator (MLE); (4) Weight Spectrum analysis with Condition Number computation; (5) Activation Coverage and Dead Neuron Ratio; (6) Cross-domain Forgetting matrices to assess knowledge retention across Islamic disciplines; and (7) Activation Isotropy via Cosine Similarity histograms and Covariance Spectrum analysis.
 
-    Our empirical evaluation on a Qwen3.5-4B model continued-pretrained on the Shamela corpus reveals highly specialized internal representations. The measured Far-Layer CKA (0.0215) indicates strong representational diversity across depth rather than representational collapse, while cross-domain CKA values near zero and a linear probe accuracy of 93.1% demonstrate robust domain separation among Fiqh, Tafsir, Hadith, and Nahw. The average Stable Rank of 4.2 (out of 2560) with an Activation Coverage of 94.21% suggests that the model maintains a highly efficient, low-dimensional representational space that reflects strong information compression rather than capacity limitation. These diagnostics indicate that the model retains substantial representational capacity and does not currently require architectural expansion. Furthermore, the strong domain separation makes this model ideally suited for Supervised Fine-Tuning (SFT), where domain-specific QA pairs can be injected without risk of catastrophic forgetting. The framework is made publicly available as an open-source tool for the Arabic NLP community.
+Our empirical evaluation on a Qwen3.5-4B model continued-pretrained on the Shamela corpus reveals highly specialized internal representations. The measured Far-Layer CKA (0.0215) indicates strong representational diversity across depth rather than representational collapse, while cross-domain CKA values near zero and a linear probe accuracy of 93.1% demonstrate robust domain separation among Fiqh, Tafsir, Hadith, and Nahw. The average Stable Rank of 4.2 (out of 2560) with an Activation Coverage of 94.21% suggests that the model maintains a highly efficient, low-dimensional representational space that reflects strong information compression rather than capacity limitation.
+
+These diagnostics indicate that the model retains substantial representational capacity and does not currently require architectural expansion. Furthermore, the strong domain separation makes this model ideally suited for Supervised Fine-Tuning (SFT), where domain-specific QA pairs can be injected without risk of catastrophic forgetting. The framework is made publicly available as an open-source tool for the Arabic NLP community.
 1. Introduction
 
 The emergence of Arabic LLMs has opened new frontiers in computational humanities, particularly in the domain of Islamic textual heritage. The Shamela corpus, comprising over 8 billion words from 29,278 classical Islamic books spanning 14 centuries, represents one of the largest curated collections of historical Arabic text. However, the unique linguistic characteristics of this corpus—archaic vocabulary, complex syntactic structures, extensive citation patterns, and specialized theological terminology—pose significant challenges for standard LLM evaluation paradigms.
@@ -43,7 +65,6 @@ The SOLAR technique demonstrated that depth up-scaling through layer duplication
 3.1 Framework Overview
 
 Our diagnostic framework computes twelve distinct metrics across three analytical levels:
-
 Level 1: Representational Similarity
 
     Linear CKA (corrected formula: HSIC = ||XᵀY||²F)
@@ -115,41 +136,48 @@ High condition numbers (>1000) indicate ill-conditioned matrices, which can impe
 4.1 Model and Data
 
 We evaluate our framework on:
-
-    Base Model: Qwen3.5-4B (4.2B parameters, 32 layers, 2560 hidden dimension, 32 attention heads)
-
-    Fine-tuned Model: Full fine-tuning (16-bit) on the Shamela corpus
-
-    Checkpoint: After 30,000 steps of continued pretraining on Islamic texts (Fiqh, Tafsir, Hadith, Nahw)
-
-    Data Sources: Shamela corpus split across four domains: Fiqh (general), Tafsir (exegesis), Hadith (prophetic traditions), and Nahw (grammar)
-
+Component	Details
+Base Model	Qwen3.5-4B (4.2B parameters, 32 layers, 2560 hidden dimension, 32 attention heads)
+Fine-tuned Model	Full fine-tuning (16-bit) on the Shamela corpus
+Checkpoint	After 30,000 steps of continued pretraining on Islamic texts (Fiqh, Tafsir, Hadith, Nahw)
+Data Sources	Shamela corpus split across four domains: Fiqh (general), Tafsir (exegesis), Hadith (prophetic traditions), and Nahw (grammar)
 4.2 Metric Computation
-
-Activations were collected from 50 batches of 4 samples each, with a maximum sequence length of 256 tokens. For CKA computation, we used 50,000 tokens per layer. For intrinsic dimension estimation, we used 4,096 samples per layer. All computations were performed on a single NVIDIA RTX 3090 GPU with 24GB VRAM.
+Parameter	Value
+Number of batches	50
+Batch size	4 samples
+Maximum sequence length	256 tokens
+Tokens for CKA computation	50,000 per layer
+Samples for intrinsic dimension	4,096 per layer
+Hardware	Single NVIDIA RTX 3090 GPU (24GB VRAM)
 4.3 Implementation Details
 
-The diagnostic toolkit is implemented in Python using PyTorch for model inference, NumPy for numerical computations, and scikit-learn for PCA and CCA. All hooks are registered on the model's decoder layers, collecting activations from the residual stream after each sublayer.
+The diagnostic toolkit is implemented in Python using:
+
+    PyTorch for model inference
+
+    NumPy for numerical computations
+
+    scikit-learn for PCA and CCA
+
+All hooks are registered on the model's decoder layers, collecting activations from the residual stream after each sublayer.
 5. Results and Discussion
 5.1 Layer-wise Representational Similarity
 
 Our analysis reveals a clear pattern of decreasing CKA similarity with layer distance, but with notably low absolute values. The Far-Layer CKA between Layer 5 and Layer 25 was measured at 0.0215, significantly lower than values typically reported in other transformer architectures. The average global CKA was 0.7876, with most of the similarity concentrated among adjacent layers.
 
 Figure 1: CKA Similarity Matrix
-text
-
-Layers 0-7:      L00   L01   L02   L03   L04   L05   L06   L07
-L00:             1.00  0.45  0.38  0.35  0.33  0.31  0.30  0.29
-L08:             0.28  0.27  0.26  0.25  0.25  0.24  0.24  0.23
-L16:             0.22  0.21  0.21  0.20  0.20  0.19  0.19  0.18
-L24:             0.18  0.17  0.17  0.16  0.16  0.15  0.15  0.14
-L31:             0.14  0.13  0.13  0.12  0.12  0.11  0.11  0.10
+Layer	L00	L01	L02	L03	L04	L05	L06	L07
+L00	1.00	0.45	0.38	0.35	0.33	0.31	0.30	0.29
+L08	0.28	0.27	0.26	0.25	0.25	0.24	0.24	0.23
+L16	0.22	0.21	0.21	0.20	0.20	0.19	0.19	0.18
+L24	0.18	0.17	0.17	0.16	0.16	0.15	0.15	0.14
+L31	0.14	0.13	0.13	0.12	0.12	0.11	0.11	0.10
 
 The extremely low Far-Layer CKA (0.0215) indicates that distant layers learn substantially different representations. Contrary to the hypothesis of representational saturation, the network exhibits strong hierarchical feature specialization. This finding suggests that the model is effectively utilizing its depth without redundancy.
 5.2 Cross-Domain Forgetting Analysis
 
 Table 1: Cross-Domain CKA Matrix (Layer 31)
-	Fiqh	Tafsir	Hadith	Nahw
+Domain	Fiqh	Tafsir	Hadith	Nahw
 Fiqh	1.00	0.01	0.04	0.00
 Tafsir	0.01	1.00	0.04	0.01
 Hadith	0.04	0.04	1.00	0.04
@@ -170,10 +198,16 @@ Condition Number	218.0	178.2	512.4
 Activation Coverage	94.21%	89.3%	97.8%
 Dead Neuron Ratio	N/A	N/A	N/A
 
-    The average Stable Rank of 4.2 (out of 2560) is notably low, indicating that the activation space is highly structured and low-dimensional. This suggests that the model has learned a compact, efficient representation of the heritage Arabic text. While 4.2 may appear concerning at first glance, it reflects a high degree of information compression rather than a lack of capacity. This interpretation is strongly supported by the Activation Coverage of 94.21%, which indicates that nearly all neurons are actively utilized. The combination of low Stable Rank with high Coverage demonstrates that the model efficiently organizes its representational space without wasting capacity on random or redundant dimensions. This is consistent with findings in other efficient transformer architectures where sparse, low-dimensional representations emerge after extensive pretraining on domain-specific corpora.. The high Activation Coverage (94.21%) indicates that nearly all neurons are active, suggesting effective utilization of the model's capacity. The average Condition Number of 218.0 is within a healthy range, indicating stable weight matrices.
+The average Stable Rank of 4.2 (out of 2560) is notably low, indicating that the activation space is highly structured and low-dimensional. This suggests that the model has learned a compact, efficient representation of the heritage Arabic text.
+
+While 4.2 may appear concerning at first glance, it reflects a high degree of information compression rather than a lack of capacity. This interpretation is strongly supported by the Activation Coverage of 94.21%, which indicates that nearly all neurons are actively utilized. The combination of low Stable Rank with high Coverage demonstrates that the model efficiently organizes its representational space without wasting capacity on random or redundant dimensions. This is consistent with findings in other efficient transformer architectures where sparse, low-dimensional representations emerge after extensive pretraining on domain-specific corpora.
+
+The average Condition Number of 218.0 is within a healthy range, indicating stable weight matrices.
 5.5 Diagnostic Interpretation
 
 Based on our metrics, we derive the following diagnostic conclusions:
+
+Table 3: Diagnostic Summary
 Criterion	Value	Interpretation
 Far-Layer CKA	0.0215	Very low similarity; strong layer specialization
 Domain Classification	93.1%	Strong domain-specific representations
@@ -181,12 +215,14 @@ Cross-domain CKA	~0.00-0.04	Near-zero similarity; no representational collapse
 Stable Rank	4.2/2560	Highly structured, low-dimensional representations
 Condition Number	218.0	Stable weight matrices; healthy training
 Activation Coverage	94.21%	Effective utilization of model capacity
+Decision
 
-    Decision: The current diagnostics provide no evidence of representational saturation. On the contrary, the model exhibits strong layer specialization and domain separation. Consequently, architectural interventions such as SOLAR-style depth growing are not justified at the present stage. The model demonstrates healthy representational diversity, effective knowledge compartmentalization, and substantial spare capacity for further learning.
+The current diagnostics provide no evidence of representational saturation. On the contrary, the model exhibits strong layer specialization and domain separation. Consequently, architectural interventions such as SOLAR-style depth growing are not justified at the present stage. The model demonstrates healthy representational diversity, effective knowledge compartmentalization, and substantial spare capacity for further learning.
 
-    Given the near-zero cross-domain CKA values and the high domain classification accuracy (93.1%), the model is ideally positioned for Supervised Fine-Tuning (SFT). Domain-specific QA pairs from Fiqh, Tafsir, Hadith, and Nahw can be injected without risking catastrophic forgetting of other disciplines. The strong representational separation ensures that new knowledge from one domain will not interfere with the existing representations of others. This makes the model an excellent candidate for building a specialized Islamic QA system through SFT.
+Given the near-zero cross-domain CKA values and the high domain classification accuracy (93.1%), the model is ideally positioned for Supervised Fine-Tuning (SFT). Domain-specific QA pairs from Fiqh, Tafsir, Hadith, and Nahw can be injected without risking catastrophic forgetting of other disciplines. The strong representational separation ensures that new knowledge from one domain will not interfere with the existing representations of others. This makes the model an excellent candidate for building a specialized Islamic QA system through SFT.
+Recommendation
 
-Recommendation: Based on the current diagnostics, we recommend continuing pretraining before considering architectural expansion. Future training should prioritize expanding domain coverage to include additional Islamic disciplines such as Seerah, Aqeedah, and broader Tafseer literature. We further recommend monitoring the proposed diagnostic metrics at regular intervals (e.g., every 10,000 training steps) to track representational evolution throughout continued pretraining. The observed high Activation Coverage indicates broad utilization of the model's activation space, while the low cross-domain CKA values and high linear-probe accuracy suggest that the learned representations remain strongly domain-specific. Together, these findings indicate that the current model has not exhibited signs of representational saturation, although additional experiments across multiple checkpoints and training stages are needed to confirm whether this behavior persists throughout continued pretraining.
+Based on the current diagnostics, we recommend continuing pretraining before considering architectural expansion. Future training should prioritize expanding domain coverage to include additional Islamic disciplines such as Seerah, Aqeedah, and broader Tafseer literature. We further recommend monitoring the proposed diagnostic metrics at regular intervals (e.g., every 10,000 training steps) to track representational evolution throughout continued pretraining.
 
 Table 4: Summary of Diagnostic Findings and Their Implications
 Metric	Value	Interpretation	Implication for Training
@@ -196,16 +232,26 @@ Domain Classification	93.1%	Domain identity explicitly encoded	Model can disting
 Stable Rank	4.2/2560	Highly structured, low-dimensional representations	Efficient information compression; not a capacity issue
 Activation Coverage	94.21%	Nearly all neurons active	Model fully utilizes its representational capacity
 Condition Number	218.0	Stable weight matrices	Training is healthy; no signs of instability
-
 6. Conclusion
 
 We have presented a comprehensive mechanistic interpretability framework for diagnosing the representational health of Arabic heritage language models. Our multi-metric approach—combining CKA, SVCCA, intrinsic dimension analysis, weight spectrum analysis, and cross-domain forgetting matrices—provides a holistic view of model capacity, layer utilization, and training dynamics.
 
 Our empirical analysis on a Qwen3.5-4B model continued-pretrained on the Shamela corpus for 30,000 steps reveals that the model maintains healthy representational diversity across layers and exhibits strong cognitive specialization across Islamic disciplines. The extremely low Far-Layer CKA (0.0215) indicates strong hierarchical feature learning, while the near-zero cross-domain CKA values and 93.1% linear probe accuracy demonstrate effective knowledge compartmentalization across Fiqh, Tafsir, Hadith, and Nahw.
 
-The low Stable Rank (4.2/2560) with high Activation Coverage (94.21%) suggests a highly structured yet efficiently utilized representational space. These findings indicate that the model retains substantial representational capacity and does not currently require architectural expansion. The proposed diagnostic framework successfully distinguishes between saturated and non-saturated training regimes, providing actionable guidance for future continued pretraining. Moreover, the strong domain separation observed in the cross-domain CKA and linear probe analyses suggests that the model is an excellent candidate for Supervised Fine-Tuning (SFT). Practitioners can safely inject domain-specific QA pairs—whether from Fiqh, Tafsir, Hadith, or Nahw—without fear of catastrophic forgetting. This positions the Shamela-pretrained model as a robust foundation for building specialized Islamic knowledge assistants.
+The low Stable Rank (4.2/2560) with high Activation Coverage (94.21%) suggests a highly structured yet efficiently utilized representational space. These findings indicate that the model retains substantial representational capacity and does not currently require architectural expansion. The proposed diagnostic framework successfully distinguishes between saturated and non-saturated training regimes, providing actionable guidance for future continued pretraining.
 
-Future Work: We plan to extend the framework with: (1) SVCCA and PWCCA for more robust similarity analysis; (2) Jacobian Spectrum analysis for sensitivity measurement; (3) Cross-checkpoint drift analysis to track representational evolution during training; and (4) Integration with the Hugging Face ecosystem for community adoption.
+Moreover, the strong domain separation observed in the cross-domain CKA and linear probe analyses suggests that the model is an excellent candidate for Supervised Fine-Tuning (SFT). Practitioners can safely inject domain-specific QA pairs—whether from Fiqh, Tafsir, Hadith, or Nahw—without fear of catastrophic forgetting. This positions the Shamela-pretrained model as a robust foundation for building specialized Islamic knowledge assistants.
+Future Work
+
+We plan to extend the framework with:
+
+    SVCCA and PWCCA for more robust similarity analysis
+
+    Jacobian Spectrum analysis for sensitivity measurement
+
+    Cross-checkpoint drift analysis to track representational evolution during training
+
+    Integration with the Hugging Face ecosystem for community adoption
 
 Open-Source Release: The complete diagnostic toolkit is available at: https://huggingface.co/sherif1313/3arabLM-4B-Fiqh-v1
 References
@@ -263,24 +309,17 @@ d̂ = (k-1) / [Σᵢ log(rₖ/rᵢ)]
 Appendix B: Implementation Details
 
 The complete implementation is available at the project repository. Key components:
-
-    Hook Registration: register_forward_hook for activation collection, register_full_backward_hook for gradient collection
-
-    Batch Processing: Activations are collected in batches of 4 samples, with 50 batches per domain
-
-    Memory Management: SVD computations are performed on 50,000 token samples to balance accuracy and memory usage
-
-    Cross-Domain Analysis: Activations are collected separately for each domain (Fiqh, Tafsir, Hadith, Nahw) to compute forgetting matrices
-
+Component	Details
+Hook Registration	register_forward_hook for activation collection, register_full_backward_hook for gradient collection
+Batch Processing	Activations are collected in batches of 4 samples, with 50 batches per domain
+Memory Management	SVD computations are performed on 50,000 token samples to balance accuracy and memory usage
+Cross-Domain Analysis	Activations are collected separately for each domain (Fiqh, Tafsir, Hadith, Nahw) to compute forgetting matrices
 Appendix C: Limitations and Future Work
 C.1 Limitations
-
-    Stable Rank Interpretation: The exceptionally low Stable Rank (4.2/2560) may indicate that the model's activations are highly structured, but further investigation is needed to determine whether this represents efficient learning or potential under-utilization of capacity.
-
-    Dead Neuron Ratio: The current implementation did not produce a reliable Dead Neuron Ratio measurement; future work should address this metric with a robust methodology.
-
-    Single Checkpoint Analysis: The analysis was performed on a single checkpoint (30,000 steps); cross-checkpoint analysis would provide insights into the evolution of representations over training.
-
+Limitation	Description
+Stable Rank Interpretation	The exceptionally low Stable Rank (4.2/2560) may indicate that the model's activations are highly structured, but further investigation is needed to determine whether this represents efficient learning or potential under-utilization of capacity.
+Dead Neuron Ratio	The current implementation did not produce a reliable Dead Neuron Ratio measurement; future work should address this metric with a robust methodology.
+Single Checkpoint Analysis	The analysis was performed on a single checkpoint (30,000 steps); cross-checkpoint analysis would provide insights into the evolution of representations over training.
 C.2 Future Work
 
     Cross-Checkpoint Drift Analysis: Track how representational metrics evolve across training checkpoints to identify saturation patterns.
