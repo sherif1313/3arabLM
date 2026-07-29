@@ -1,4 +1,4 @@
-# A Diagnostic Framework for Mechanistic Interpretability of Arabic Heritage Language Models: The Shamela Case Study
+# A Diagnostic Framework for Mechanistic Interpretability of Arabic Heritage Language Models: A Case Study on Continued Pretraining with the Shamela Corpus
 
 Authors: Sheriff (Project Lead)
 Affiliation: Shamela Builder Project
@@ -184,14 +184,15 @@ Activation Coverage	94.21%	Effective utilization of model capacity
 
 Decision: The current diagnostics provide no evidence of representational saturation. On the contrary, the model exhibits strong layer specialization and domain separation. Consequently, architectural interventions such as SOLAR-style depth growing are not justified at the present stage. The model demonstrates healthy representational diversity, effective knowledge compartmentalization, and substantial spare capacity for further learning.
 
-Recommendation: Continue pretraining with a reduced learning rate (3e-6) and expand domain coverage to include additional Islamic disciplines such as Seerah, Aqeedah, and Tafseer. Monitor the diagnostic metrics periodically (every 10,000 steps). The high Activation Coverage suggests that the model is utilizing its neurons effectively, and the near-zero cross-domain CKA indicates that new knowledge will be integrated without interfering with existing domains.
+Recommendation: Based on the current diagnostics, we recommend continuing pretraining before considering architectural expansion. Future training should prioritize expanding domain coverage to include additional Islamic disciplines such as Seerah, Aqeedah, and broader Tafseer literature. We further recommend monitoring the proposed diagnostic metrics at regular intervals (e.g., every 10,000 training steps) to track representational evolution throughout continued pretraining. The observed high Activation Coverage indicates broad utilization of the model's activation space, while the low cross-domain CKA values and high linear-probe accuracy suggest that the learned representations remain strongly domain-specific. Together, these findings indicate that the current model has not exhibited signs of representational saturation, although additional experiments across multiple checkpoints and training stages are needed to confirm whether this behavior persists throughout continued pretraining.
+
 6. Conclusion
 
 We have presented a comprehensive mechanistic interpretability framework for diagnosing the representational health of Arabic heritage language models. Our multi-metric approach—combining CKA, SVCCA, intrinsic dimension analysis, weight spectrum analysis, and cross-domain forgetting matrices—provides a holistic view of model capacity, layer utilization, and training dynamics.
 
 Our empirical analysis on a Qwen3.5-4B model continued-pretrained on the Shamela corpus for 30,000 steps reveals that the model maintains healthy representational diversity across layers and exhibits strong cognitive specialization across Islamic disciplines. The extremely low Far-Layer CKA (0.0215) indicates strong hierarchical feature learning, while the near-zero cross-domain CKA values and 93.1% linear probe accuracy demonstrate effective knowledge compartmentalization across Fiqh, Tafsir, Hadith, and Nahw.
 
-The low Stable Rank (4.2/2560) with high Activation Coverage (94.21%) suggests a highly structured yet efficiently utilized representational space. These findings indicate that the model retains substantial representational capacity and does not currently require architectural expansion. The proposed diagnostic framework successfully distinguishes between saturated and non-saturated training regimes, providing actionable guidance for future continued pretraining.
+The low Stable Rank (4.2/2560) with high Activation Coverage (94.21%) suggests a highly structured yet efficiently utilized representational space. These findings indicate that the model retains substantial representational capacity and does not currently require architectural expansion. The framework provides quantitative diagnostics that, in our experiments, distinguish between models exhibiting higher representational redundancy and the analyzed Shamela checkpoint. Further validation across additional models is left for future work..
 
 Future Work: We plan to extend the framework with: (1) SVCCA and PWCCA for more robust similarity analysis; (2) Jacobian Spectrum analysis for sensitivity measurement; (3) Cross-checkpoint drift analysis to track representational evolution during training; and (4) Integration with the Hugging Face ecosystem for community adoption.
 
