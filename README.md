@@ -185,7 +185,7 @@ The model was continued-pretrained on six domains from the Shamela collection:
 
 ## 🔬 Key Findings
 
-1. **Domain discriminability increases substantially with depth** – Linear probe accuracy rises from 53.80% (L0) to 82.31% (L31).
+1. **Domain discriminability increases substantially with depth** – Linear probe accuracy rises from 53.80% (L0) to 82.78% (L31).
 
 2. **Cross-domain representational similarity decreases strongly in the final layer** – Average domain CKA falls from ~0.11–0.15 in middle layers to 0.025891 at L31.
 
