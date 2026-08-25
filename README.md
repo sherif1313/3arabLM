@@ -1,6 +1,4 @@
-A Representation-Diagnostic Framework for Arabic
-Heritage Language Models: A Case Study on
-Fine-Tuning with the Shamela Corpus
+# A Representation-Diagnostic Framework for Arabic Heritage Language Models: A Case Study on Fine-Tuning with the Shamela Corpus
 Sheriff Hassan
 Shamela Builder Project
 August 2026
