@@ -3,6 +3,8 @@ Sheriff Hassan
 Shamela Builder Project
 August 2026
 Abstract
+
+
 Large language models adapted to specialized historical corpora may develop substantial
 changes in their internal representations, yet conventional evaluation metrics provide limited
 information about how such changes evolve across network depth. This paper presents a
