@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 # ==================== تحميل النموذج ====================
-BASE_MODEL = "sherif1313/3arabLM-4B-Fiqh-v1"
+BASE_MODEL = "sherif1313/3arabLM-4B-islamic-v2"  # غيّره إذا كان الاسم مختلفاً
 
 print("⏳ تحميل النموذج...")
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
@@ -19,6 +19,59 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 model.eval()
 print("✅ تم تحميل النموذج بنجاح")
+
+# ==================== التصنيفات الجديدة (مطابقة لكود التدريب) ====================
+CATEGORIES_MAIN = [
+    "التفاسير",
+    "فقه عام",
+    "متون الحديث",
+    "العقيدة",
+    "النحو والصرف",
+    "الفتاوى"
+]
+
+# ==================== بيانات الكتب (25 كتاباً) ====================
+# تم تعديل التصنيفات لتطابق القائمة أعلاه
+BOOKS_DATA = {
+    # ✍️ النحو والصرف (5 كتب)
+    "النحو الوافي": ("عباس حسن", "النحو والصرف"),
+    "تمهيد القواعد بشرح تسهيل الفوائد": ("ابن مالك", "النحو والصرف"),
+    "شرح ألفية ابن مالك للحازمي": ("الحازمي", "النحو والصرف"),
+    "شرح ألفية ابن مالك للشاطبي = المقاصد الشافية": ("الشاطبي", "النحو والصرف"),
+    "شرح المفصل لابن يعيش": ("ابن يعيش", "النحو والصرف"),
+
+    # ⚖️ فقه عام (3 كتب)
+    "الموسوعة الفقهية الكويتية": ("وزارة الأوقاف الكويتية", "فقه عام"),
+    "موسوعة الإجماع في الفقه الإسلامي": ("مجموعة مؤلفين", "فقه عام"),
+    "موسوعة فقه العبادات": ("مجموعة مؤلفين", "فقه عام"),
+
+    # ⚖️ الفتاوى (2 كتب أساسية + 1 إضافي)
+    "فتاوى الشبكة الإسلامية": ("الشبكة الإسلامية", "الفتاوى"),
+    "مجموع فتاوى ورسائل العثيمين": ("ابن عثيمين", "الفتاوى"),
+    "فتاوى ابن تيمية": ("ابن تيمية", "الفتاوى"),  # إضافي
+
+    # 📚 متون الحديث (4 كتب)
+    "السنن الكبرى للبيهقي ت التركي": ("البيهقي", "متون الحديث"),
+    "المحيط في الاحاديث النبوية والسنن والاثار": ("مجموعة مؤلفين", "متون الحديث"),
+    "جامع الرويات": ("مجموعة مؤلفين", "متون الحديث"),
+    "صحيح البخاري": ("البخاري", "متون الحديث"),
+
+    # 🕌 العقيدة (3 كتب)
+    "حلية الأولياء وطبقات الأصفياء": ("أبو نعيم الأصفهاني", "العقيدة"),
+    "الجامع لشعب الإيمان للبيهقي": ("البيهقي", "العقيدة"),
+    "الموسوعة العقدية - الدرر السنية": ("الدرر السنية", "العقيدة"),
+
+    # 📜 التفاسير (5 كتب أساسية + 2 إضافيين)
+    "المهذب النقي الجامع لتفسير ابن جرير الطبري": ("ابن جرير الطبري", "التفاسير"),
+    "الموسوعة القرآنية": ("مجموعة مؤلفين", "التفاسير"),
+    "تفسير ابن كثير _": ("ابن كثير", "التفاسير"),
+    "تفسير القرطبي": ("القرطبي", "التفاسير"),
+    "روح البيان": ("الإسماعيلي", "التفاسير"),
+    "تفسير الرازي = مفاتيح الغيب": ("الرازي", "التفاسير"),  # إضافي
+    "المغني لابن قدامة": ("ابن قدامة", "فقه عام"),  # إضافي (وضعته في فقه عام)
+}
+
+BOOK_NAMES = list(BOOKS_DATA.keys())
 
 # ==================== ملف التعليقات ====================
 FEEDBACK_FILE = "feedback.jsonl"
@@ -91,21 +144,21 @@ def save_comment_and_refresh(comment, rating, user_prompt, model_answer):
     updated_comments = load_comments(as_html=True)
     return status_msg, updated_comments
 
-# ==================== دالة التوليد ====================
+# ==================== دالة التوليد (تم تعديل التنسيق ليطابق التدريب) ====================
 @spaces.GPU(duration=120)
 def generate_text(prompt, book, author, category, max_new_tokens):
-    full_prompt = f"book {book}\nauthor {author}\ncategory {category}\n{prompt}"
+    # ✅ التعديل الجوهري: نفس صيغة format_example في التدريب
+    # book X author Y category Z\n(prompt)
+    full_prompt = f"book {book} author {author} category {category}\n{prompt}"
+    
     inputs = tokenizer(full_prompt, return_tensors="pt").to(model.device)
 
     with torch.no_grad():
         outputs = model.generate(
             **inputs,
-            do_sample=True,
-            temperature=0.15,
-            top_p=0.85,
-            top_k=40,
-            repetition_penalty=1.08,
-            no_repeat_ngram_size=5,
+            do_sample=False,
+            repetition_penalty=1.02,
+            no_repeat_ngram_size=2,
             max_new_tokens=int(max_new_tokens),
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
@@ -117,19 +170,38 @@ def generate_text(prompt, book, author, category, max_new_tokens):
     )
     return generated
 
-# ==================== خيارات التصنيف ====================
-CATEGORIES = ["التفاسير", "فقه عام", "نحو", "بدون"]
+# ==================== دوال تحديث الحقول عند اختيار الكتاب ====================
+def update_author_and_category(book_name):
+    if book_name in BOOKS_DATA:
+        author, category = BOOKS_DATA[book_name]
+        return author, category
+    return "", ""
 
 # ==================== تصميم واجهة Gradio ====================
-with gr.Blocks(title="محرك النصوص التراثية نسخة تجريبيه", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(title="محرك النصوص التراثية - نسخة تجريبية", theme=gr.themes.Soft()) as demo:
     gr.Markdown("# 📖 3arabLM-4B | محرك النصوص التراثية")
     gr.Markdown("💬 **التعليقات مرئية للجميع** - ساعدنا في تحسين النموذج بمشاركة رأيك.")
 
     with gr.Row():
         with gr.Column(scale=1):
-            book_input = gr.Textbox(label="اسم الكتاب", value="التفسير", placeholder="مثال: التفسير")
-            author_input = gr.Textbox(label="اسم المؤلف", value="ابن كثير", placeholder="مثال: ابن كثير")
-            category_dropdown = gr.Dropdown(choices=CATEGORIES, label="التصنيف", value="التفاسير")
+            # قائمة منسدلة تحتوي على 25 كتاباً
+            book_input = gr.Dropdown(
+                choices=BOOK_NAMES,
+                label="📚 اختيار الكتاب",
+                value=BOOK_NAMES[0]
+            )
+            author_input = gr.Textbox(
+                label="👤 اسم المؤلف",
+                value=BOOKS_DATA[BOOK_NAMES[0]][0] if BOOK_NAMES else "",
+                interactive=True
+            )
+            # ✅ التصنيفات الآن عربية ومطابقة لكود التدريب
+            category_input = gr.Dropdown(
+                choices=CATEGORIES_MAIN,
+                label="📂 التصنيف الرئيسي",
+                value=BOOKS_DATA[BOOK_NAMES[0]][1] if BOOK_NAMES else CATEGORIES_MAIN[0],
+                interactive=True
+            )
             max_tokens_slider = gr.Slider(
                 minimum=50, maximum=512, value=300, step=50,
                 label="📏 الطول الأقصى للنص المولد (Tokens)"
@@ -138,11 +210,18 @@ with gr.Blocks(title="محرك النصوص التراثية نسخة تجريب
         with gr.Column(scale=2):
             prompt_input = gr.Textbox(
                 label="النص / السؤال",
-                placeholder="مثال: بسم الله الرحمن الرحيم، قال الله تعالى: {الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ} أي...",
+                placeholder="اكتب النص أو السؤال الذي تريد استكماله...",
                 lines=8
             )
             generate_btn = gr.Button("🚀 توليد النص", variant="primary")
             output_text = gr.Textbox(label="الناتج", lines=12)
+
+    # ربط اختيار الكتاب بتحديث المؤلف والتصنيف تلقائياً
+    book_input.change(
+        fn=update_author_and_category,
+        inputs=book_input,
+        outputs=[author_input, category_input]
+    )
 
     with gr.Row():
         with gr.Column(scale=1):
@@ -163,7 +242,7 @@ with gr.Blocks(title="محرك النصوص التراثية نسخة تجريب
 
     generate_btn.click(
         fn=generate_text,
-        inputs=[prompt_input, book_input, author_input, category_dropdown, max_tokens_slider],
+        inputs=[prompt_input, book_input, author_input, category_input, max_tokens_slider],
         outputs=output_text
     )
 
