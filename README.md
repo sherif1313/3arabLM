@@ -195,26 +195,104 @@ The model was continued-pretrained on six domains from the Shamela collection:
 
 ---
 
-## ⚠️ Limitations
+## 📦 Current Release
+Model: sherif1313/3arabLM-4B-islamic-v2
 
-| Limitation | Description |
-| :--- | :--- |
-| **No Base-Model Comparison** | The original Qwen3.5-4B base model was not included under identical diagnostic conditions. |
-| **Single Main Checkpoint** | Analysis focuses on checkpoint 97,500; no trajectory across training checkpoints. |
-| **No Statistical Confidence Intervals** | Single diagnostic run; confidence intervals not reported. |
-| **Not Mechanistic Interpretability** | The framework is representational, not causal. |
-| **No Catastrophic-Forgetting Experiment** | SFT was not tested. |
+This release represents a new stage in the 3arabLM research project. The previous development focused more narrowly on Islamic scholarly domains such as Fiqh and Tafsir. The new direction expands the training curriculum toward a broader Islamic Heritage Foundation Model covering multiple branches of Islamic and Arabic scholarship. The model should still be considered an early research milestone. A sustantial portion of the planned training curriculum remains to be completed.
+
+These books have been preserved in the model weightsو 
+
+النحو الوافي
+تمهيد القواعد بشرح تسهيل الفوائد
+شرح ألفية ابن مالك للحازمي
+شرح ألفية ابن مالك للشاطبي = المقاصد الشافية
+شرح المفصل لابن يعيش
+الموسوعة الفقهية الكويتية
+موسوعة الإجماع في الفقه الإسلامي
+موسوعة فقه العبادات
+فتاوى الشبكة الإسلامية
+مجموع فتاوى ورسائل العثيمين
+السنن الكبرى للبيهقي ت التركي
+المحيط في الاحاديث النبوية والسنن والاثار
+جامع الرويات
+حلية الأولياء وطبقات الأصفياء
+صحيح البخاري 
+الجامع لشعب الإيمان للبيهقي
+الموسوعة العقدية - الدرر السنية
+المهذب النقي الجامع لتفسير ابن جرير الطبري
+الموسوعة القرآنية
+تفسير ابن كثير _ 
+تفسير القرطبي
+روح البيان
+
+When selecting other books, please modify the code.
+            do_sample=True,               
+            repetition_penalty=1.08,
+            no_repeat_ngram_size=4,
+
+
 
 ---
 
-## 🗓️ Future Work
+## 🗓️ ⚠️ Current Limitations
+The current model has several limitations:
 
-- **Checkpoint Trajectory:** 10k, 30k, 50k, 75k, 97.5k steps.
-- **Base-Model Comparison:** Original Qwen3.5-4B.
-- **Intrinsic Dimension:** Levina–Bickel MLE.
-- **Effective Rank and Participation Ratio:** Additional spectral measures.
-- **SFT and Forgetting Experiments:** Domain-specific SFT with pre/post evaluation.
-- **Causal Representation Interventions:** Activation patching, ablation, feature steering.
+The training curriculum is still incomplete.
+Some disciplines remain underrepresented.
+Source attribution is still under development.
+Generated claims should be verified against original sources.
+🔬 Research Directions
+The project explores several research questions:
+
+Full-Parameter Memorization
+How much classical scholarly knowledge can be encoded directly into model parameters?
+
+Knowledge Reconstruction
+Can a language model reconstruct scholarly passages without relying entirely on external retrieval?
+
+Hierarchical Representation
+Can لbook, chapter, section, and paragraph structures improve scholarly representations?
+
+Metadata-Aware Pretraining
+Can author, book, century, madhhab, and discipline metadata improve knowledge organization?
+
+Knowledge-Preserving Scaling
+Can model capacity be increased without catastrophic forgetting?
+
+Expert Models
+Can specialized Islamic experts be efficiently developed from a shared foundation?
+
+📖 Large Language Models as Compressed Digital Libraries
+The central research hypothesis of 3arabLM is that language models may function not only as generators, but also as compressed representations of large scholarly corpora. The project therefore explores the possibility of building:
+
+📖 Knowledge Recall Models
+🧠 Memorization-Oriented Language Models
+🏛 Compressed Digital Libraries
+The ultimate objective is to study how much classical Arabic scholarly knowledge can be represented and reconstructed from model parameters.
+
+🎯 Project Goal
+The ultimate objective of 3arabLM is:
+
+To preserve, recall, and reconstruct the Arabic Islamic scholarly heritage with the highest possible degree of fidelity while maintaining the language, terminology, methodologies, and diversity of the original scholarly tradition.
+
+The project is not intended to replace scholars.
+
+It is a research effort exploring how modern language-model technology can contribute to:
+
+Digital preservation.
+Computational study of Islamic heritage.
+Classical Arabic NLP.
+Scholarly knowledge representation.
+Knowledge memorization.
+Text reconstruction.
+🗓️ Roadmap
+Stage	Description	Status
+Stage 1	Foundation — Continual pretraining on selected Islamic scholarly domains	✅ Complete
+Stage 2	Scholarly Expansion — Expansion into Hadith, Sirah, History, Aqeedah, Arabic Language, Literature, and Spiritual Literature	🔄 In Progress
+Stage 3	Metadata Integration — Adding structured information about books, authors, periods, schools, and disciplines	⏳ Planned
+Stage 4	Capacity Scaling — Increasing model capacity while preserving previously learned knowledge	⏳ Planned
+Stage 5	Expert Models — Developing specialized experts for individual scholarly disciplines	⏳ Planned
+Stage 6	Islamic Heritage Foundation — Building a large-scale Arabic foundation model	⏳ Long-Term
 
 ---
 
