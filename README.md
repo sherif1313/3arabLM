@@ -200,6 +200,8 @@ Model: sherif1313/3arabLM-4B-islamic-v2
 
 This release represents a new stage in the 3arabLM research project. The previous development focused more narrowly on Islamic scholarly domains such as Fiqh and Tafsir. The new direction expands the training curriculum toward a broader Islamic Heritage Foundation Model covering multiple branches of Islamic and Arabic scholarship. The model should still be considered an early research milestone. A sustantial portion of the planned training curriculum remains to be completed.
 
+```text
+
 These books have been preserved in the model weightsو 
 
 النحو الوافي
@@ -231,7 +233,7 @@ When selecting other books, please modify the code.
             no_repeat_ngram_size=4,
 
 
-
+```
 ---
 
 ## 🗓️ ⚠️ Current Limitations
