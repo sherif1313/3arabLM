@@ -14,12 +14,6 @@ tags:
 - hadith
 - aqeedah
 - nahw
-- continued-pretraining
-- representation-analysis
-- cka
-- stable-rank
-- linear-probe
-- domain-specialization
 ---
 
 # 🕌 3arabLM-4B-Islamic-v2
