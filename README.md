@@ -304,7 +304,7 @@ If you use this model in academic research, please cite:
 
 ```bibtex
 @article{hassan_2026_3arabLM,
-    title={A Representation-Diagnostic Framework for Arabic Heritage Language Models: A Case Study on Continued Pretraining with the Shamela Corpus},
+    title={3arabLM-4B-islamic-v2},
     author={Hassan, Sherif},
     year={2026},
     url={https://huggingface.co/sherif1313/3arabLM-4B-islamic-v2}
